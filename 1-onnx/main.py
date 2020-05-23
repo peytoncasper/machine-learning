@@ -1,3 +1,4 @@
+import keras2onnx
 import keras as keras
 import numpy as np
 import tensorflow as tf
@@ -6,13 +7,13 @@ import tensorflow as tf
 def main():
     (training_images, training_labels) = load_data(
         "data/train-images-idx3-ubyte",
-        "data/train-labels-idx1-ubyte.gz",
+        "data/train-labels-idx1-ubyte",
         60000
     )
 
     (test_images, test_labels) = load_data(
         "data/t10k-images-idx3-ubyte",
-        "data/t10k-labels-idx1-ubyte.gz",
+        "data/t10k-labels-idx1-ubyte",
         10000
     )
 
@@ -42,6 +43,11 @@ def main():
 
     print("Model Loss: {}, Model Accuracy: {}".format(loss[0], loss[1]))
 
+    convert_model(model)
+
+def convert_model(model):
+    minst_onnx = keras2onnx.convert_keras(model, "minst", doc_string="MINST Model")
+    keras2onnx.save_model(minst_onnx, "minst.onnx")
 
 def load_data(image_file_path, label_file_path, count):
     image_file = open(image_file_path, "rb")
@@ -73,6 +79,3 @@ def load_data(image_file_path, label_file_path, count):
     label_file.close()
 
     return images, labels
-
-
-main()
